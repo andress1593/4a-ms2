@@ -1,0 +1,39 @@
+package com.misiontic.AccountMS.controllers;
+import com.misiontic.AccountMS.exceptions.AccountNotFoundException;
+import com.misiontic.AccountMS.models.Horario;
+import com.misiontic.AccountMS.models.Transaction;
+import com.misiontic.AccountMS.repositories.HorarioRepository;
+import com.misiontic.AccountMS.repositories.TransactionRepository;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class TransactionController {
+    private final TransactionRepository transactionRepository;
+    private final HorarioRepository accountRepository;
+
+    public TransactionController(TransactionRepository transactionRepository, HorarioRepository accountRepository) {
+        this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+    }
+
+    @GetMapping("/transactions/{usernameOrigin}")
+    List<Transaction> getTransactionByUsernameOrigin(@PathVariable String usernameOrigin){
+        return transactionRepository.getByUsernameOrigin(usernameOrigin);
+    }
+    @PostMapping("/transaction/")
+    Transaction newTransaction(@RequestBody Transaction transaction){
+        Horario accountDestiny = accountRepository.findById(transaction.getUsernameDestiny()).orElse(null);
+        Horario accountOrigin = accountRepository.findById(transaction.getUsernameOrigin()).orElse(null);
+        if(accountOrigin == null || accountDestiny == null){
+            throw new AccountNotFoundException("La cuenta origen o la cuenta destino no existen");
+        }
+        accountDestiny.setBalance(accountDestiny.getBalance() + transaction.getValue());
+        accountOrigin.setBalance(accountOrigin.getBalance() - transaction.getValue());
+        accountRepository.save(accountDestiny);
+        accountRepository.save(accountOrigin);
+        return transactionRepository.save(transaction);
+    }
+
+}
