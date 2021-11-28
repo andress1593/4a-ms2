@@ -1,0 +1,6 @@
+com\misiontic\AccountMS\repositories\HorarioRepository.class
+com\misiontic\AccountMS\models\Horario.class
+com\misiontic\AccountMS\controllers\HorarioController.class
+com\misiontic\AccountMS\exceptions\HorarioNotFoundAdvice.class
+com\misiontic\AccountMS\exceptions\HorarioNotFoundException.class
+com\misiontic\AccountMS\AccountMsApplication.class
